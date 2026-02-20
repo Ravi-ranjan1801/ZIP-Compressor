@@ -23,6 +23,15 @@ int main() {
 
         cout << ")\n";
     }
+    string decompressed = decompressLZ77(compressed);
+
+cout << "\nDecompressed Output:\n";
+cout << decompressed << endl;
+
+if (decompressed == input)
+    cout << "\nReversible Compression Confirmed\n";
+else
+    cout << "\nError in Decompression\n";
 
     return 0;
 }

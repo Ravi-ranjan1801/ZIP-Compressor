@@ -34,3 +34,27 @@ vector<Token> compressLZ77(string input, int windowSize) {
 
     return output;
 }
+
+string decompressLZ77(vector<Token> tokens) {
+    string output;
+
+    for (auto &t : tokens) {
+
+        if (t.offset == 0) {
+            if (t.nextChar != '\0')
+                output += t.nextChar;
+        }
+        else {
+            int start = output.size() - t.offset;
+
+            for (int i = 0; i < t.length; i++) {
+                output += output[start + i];
+            }
+
+            if (t.nextChar != '\0')
+                output += t.nextChar;
+        }
+    }
+
+    return output;
+}
