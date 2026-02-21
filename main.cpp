@@ -1,37 +1,45 @@
 #include <iostream>
 #include "include/lz77.h"
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
-int main() {
-    string input;
+string readFile(const string& filename) {
+    ifstream file(filename, ios::binary);
+    if (!file) {
+        cerr << "Error opening file!\n";
+        exit(1);
+    }
 
-    cout << "Enter string: ";
-    cin >> input;
+    stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+int main() {
+
+    string filename;
+    cout << "Enter file name (inside test folder): ";
+    cin >> filename;
+
+    string path = "test/" + filename;
+
+    string input = readFile(path);
+
+    cout << "\nOriginal Size: " << input.size() << " bytes\n";
 
     vector<Token> compressed = compressLZ77(input);
 
-    cout << "\nCompressed Output:\n";
-    for (auto t : compressed) {
-        cout << "(" << t.offset << ", "
-             << t.length << ", ";
-
-        if (t.nextChar == '\0')
-            cout << "NULL";
-        else
-            cout << t.nextChar;
-
-        cout << ")\n";
-    }
     string decompressed = decompressLZ77(compressed);
 
-cout << "\nDecompressed Output:\n";
-cout << decompressed << endl;
+    if (decompressed == input)
+        cout << " Reversible Compression Confirmed\n";
+    else
+        cout << " Error in Decompression\n";
 
-if (decompressed == input)
-    cout << "\nReversible Compression Confirmed\n";
-else
-    cout << "\nError in Decompression\n";
+    cout << "Number of LZ77 Tokens: " << compressed.size() << endl;
 
     return 0;
 }
+   
