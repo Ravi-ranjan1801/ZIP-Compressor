@@ -11,5 +11,6 @@ struct Token {
 };
 
 std::vector<Token> compressLZ77(std::string input, int windowSize = 20);
+std::string decompressLZ77(std::vector<Token> tokens);
 
 #endif
