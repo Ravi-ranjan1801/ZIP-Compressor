@@ -34,6 +34,30 @@ vector<string> splitSymbols(const string& decoded) {
     return result;
 }
 
+vector<unsigned char> bitStringToBytes(const string& bits) {
+    vector<unsigned char> bytes;
+
+    for (int i = 0; i < bits.size(); i += 8) {
+        string byteStr = bits.substr(i, 8);
+        while (byteStr.size() < 8) byteStr += '0';
+
+        unsigned char byte = 0;
+        for (int j = 0; j < 8; j++) {
+            if (byteStr[j] == '1')
+                byte |= (1 << (7 - j));
+        }
+
+        bytes.push_back(byte);
+    }
+
+    return bytes;
+}
+
+void writeBinaryFile(const string& filename, const vector<unsigned char>& data) {
+    ofstream file(filename, ios::binary);
+    file.write((char*)data.data(), data.size());
+}
+
 vector<Token> reconstructTokens(const vector<string>& symbols) {
     vector<Token> tokens;
 
@@ -98,6 +122,12 @@ if (!root) {
 auto codes = generateCodes(root);
 
 string encoded = encodeWithHuffman(symbols, codes);
+
+auto bytes = bitStringToBytes(encoded);
+writeBinaryFile("compressed.bin", bytes);
+
+cout << "Compressed file written: compressed.bin\n";
+
 string decodedStream = decodeWithHuffman(encoded, root);
 
 
@@ -130,7 +160,7 @@ if (finalOutput == input)
     cout << "FULL PIPELINE SUCCESS\n";
 else
     cout << "FULL PIPELINE FAILED\n";
-    
+
 
       freeTree(root);
     return 0;
