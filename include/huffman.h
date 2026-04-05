@@ -27,5 +27,5 @@ HuffmanNode* buildHuffmanTree(const vector<string>& symbols);
 
 string decodeWithHuffman(const string& encoded,
                          HuffmanNode* root);
-
+void freeTree(HuffmanNode* root);
 #endif

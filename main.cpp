@@ -83,7 +83,7 @@ cout << "Encoded Bit Length: " << encoded.size() << " bits\n";
 cout << "Approx Compressed Size: " << encoded.size() / 8.0 << " bytes\n";
 
   
-   //   freeTree(root);
+      freeTree(root);
     return 0;
 }
 

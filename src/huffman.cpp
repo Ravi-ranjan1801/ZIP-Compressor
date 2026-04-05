@@ -22,21 +22,17 @@ void generateCodes(HuffmanNode* root,
     if (!root) return;
 
     if (!root->left && !root->right) {
-        codes[root->symbol] = currentCode;
-        return;
-    }
+    codes[root->symbol] = (currentCode == "") ? "0" : currentCode;
+    return;
+}
 
     generateCodes(root->left, currentCode + "0", codes);
     generateCodes(root->right, currentCode + "1", codes);
 }
 
-unordered_map<string, string> buildHuffmanCodes(const vector<string>& symbols) {
-
-    HuffmanNode* root = buildHuffmanTree(symbols);
-
+unordered_map<string, string> generateCodes(HuffmanNode* root) {
     unordered_map<string, string> codes;
     generateCodes(root, "", codes);
-
     return codes;
 }
 
@@ -73,7 +69,8 @@ HuffmanNode* buildHuffmanTree(const vector<string>& symbols) {
         pq.push(parent);
     }
 
-    return pq.top();
+   if (pq.empty()) return nullptr;
+return pq.top();
 }
 
 string decodeWithHuffman(const string& encoded,
@@ -84,10 +81,11 @@ string decodeWithHuffman(const string& encoded,
 
     for (char bit : encoded) {
 
-        if (bit == '0')
-            current = current->left;
-        else
-            current = current->right;
+       if (bit == '0') {
+    if (current->left) current = current->left;
+} else {
+    if (current->right) current = current->right;
+}
 
         // If leaf node
         if (!current->left && !current->right) {
