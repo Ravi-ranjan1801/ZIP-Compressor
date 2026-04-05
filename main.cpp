@@ -53,8 +53,16 @@ vector<unsigned char> bitStringToBytes(const string& bits) {
     return bytes;
 }
 
-void writeBinaryFile(const string& filename, const vector<unsigned char>& data) {
+void writeBinaryFile(const string& filename, 
+                     const vector<unsigned char>& data,
+                     int bitLength) {
+
     ofstream file(filename, ios::binary);
+
+    // write bit length first (4 bytes)
+    file.write((char*)&bitLength, sizeof(bitLength));
+
+    // then write actual data
     file.write((char*)data.data(), data.size());
 }
 
@@ -124,7 +132,7 @@ auto codes = generateCodes(root);
 string encoded = encodeWithHuffman(symbols, codes);
 
 auto bytes = bitStringToBytes(encoded);
-writeBinaryFile("compressed.bin", bytes);
+writeBinaryFile("compressed.bin", bytes, encoded.size());
 
 cout << "Compressed file written: compressed.bin\n";
 
