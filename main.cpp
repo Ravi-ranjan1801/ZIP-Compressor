@@ -38,7 +38,7 @@ int main() {
     cout << "Estimated Compressed Size (naive struct storage): "
      << estimatedCompressedSize << " bytes\n";
 
-    double ratio = (double)estimatedCompressedSize / input.size();
+    double ratio = input.empty() ? 0 : (double)estimatedCompressedSize / input.size();
 
     cout << "Compression Ratio (naive): " << ratio << endl;
 
@@ -53,12 +53,14 @@ for (auto &t : compressed) {
     }
 }
 
-auto codes = buildHuffmanCodes(symbols);
+HuffmanNode* root = buildHuffmanTree(symbols);
+auto codes = generateCodes(root);
 
 string encoded = encodeWithHuffman(symbols, codes);
 
-cout << "Encoded Bit Length: " << encoded.size() << " bits\n";
-cout << "Approx Compressed Size: " << encoded.size() / 8.0 << " bytes\n";
+string decodedStream = decodeWithHuffman(encoded, root);
+
+
 
     string decompressed = decompressLZ77(compressed);
 
@@ -67,8 +69,22 @@ cout << "Approx Compressed Size: " << encoded.size() / 8.0 << " bytes\n";
     else
         cout << "Error in Decompression\n";
 
-   
+  
+string originalStream = "";
+for (auto &s : symbols)
+    originalStream += s + "|";
 
+if (decodedStream == originalStream)
+    cout << "Huffman Decoding Successful\n";
+else
+    cout << "Huffman Decoding Mismatch\n";
+
+cout << "Encoded Bit Length: " << encoded.size() << " bits\n";
+cout << "Approx Compressed Size: " << encoded.size() / 8.0 << " bytes\n";
+
+  
+   //   freeTree(root);
     return 0;
 }
+
    

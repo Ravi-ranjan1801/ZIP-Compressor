@@ -32,6 +32,28 @@ void generateCodes(HuffmanNode* root,
 
 unordered_map<string, string> buildHuffmanCodes(const vector<string>& symbols) {
 
+    HuffmanNode* root = buildHuffmanTree(symbols);
+
+    unordered_map<string, string> codes;
+    generateCodes(root, "", codes);
+
+    return codes;
+}
+
+string encodeWithHuffman(const vector<string>& symbols,
+                         const unordered_map<string, string>& codes) {
+
+    string encoded = "";
+
+    for (auto &s : symbols) {
+        encoded += codes.at(s);
+    }
+
+    return encoded;
+}
+
+HuffmanNode* buildHuffmanTree(const vector<string>& symbols) {
+
     unordered_map<string, int> freq = buildFrequencyTable(symbols);
 
     priority_queue<HuffmanNode*, vector<HuffmanNode*>, Compare> pq;
@@ -51,22 +73,35 @@ unordered_map<string, string> buildHuffmanCodes(const vector<string>& symbols) {
         pq.push(parent);
     }
 
-    HuffmanNode* root = pq.top();
-
-    unordered_map<string, string> codes;
-    generateCodes(root, "", codes);
-
-    return codes;
+    return pq.top();
 }
 
-string encodeWithHuffman(const vector<string>& symbols,
-                         const unordered_map<string, string>& codes) {
+string decodeWithHuffman(const string& encoded,
+                         HuffmanNode* root) {
 
-    string encoded = "";
+    string decoded = "";
+    HuffmanNode* current = root;
 
-    for (auto &s : symbols) {
-        encoded += codes.at(s);
+    for (char bit : encoded) {
+
+        if (bit == '0')
+            current = current->left;
+        else
+            current = current->right;
+
+        // If leaf node
+        if (!current->left && !current->right) {
+            decoded += current->symbol;
+            current = root;
+        }
     }
 
-    return encoded;
+    return decoded;
+}
+
+void freeTree(HuffmanNode* root) {
+    if (!root) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    delete root;
 }

@@ -18,9 +18,14 @@ struct HuffmanNode {
 
 unordered_map<string, int> buildFrequencyTable(const vector<string>& symbols);
 
-unordered_map<string, string> buildHuffmanCodes(const vector<string>& symbols);
+unordered_map<string, string> generateCodes(HuffmanNode* root);
 
 string encodeWithHuffman(const vector<string>& symbols,
                          const unordered_map<string, string>& codes);
+
+HuffmanNode* buildHuffmanTree(const vector<string>& symbols);
+
+string decodeWithHuffman(const string& encoded,
+                         HuffmanNode* root);
 
 #endif
