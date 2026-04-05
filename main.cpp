@@ -54,10 +54,15 @@ for (auto &t : compressed) {
 }
 
 HuffmanNode* root = buildHuffmanTree(symbols);
+
+if (!root) {
+    cout << "No Huffman tree could be built.\n";
+    return 0;
+}
+
 auto codes = generateCodes(root);
 
 string encoded = encodeWithHuffman(symbols, codes);
-
 string decodedStream = decodeWithHuffman(encoded, root);
 
 

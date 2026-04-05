@@ -88,10 +88,10 @@ string decodeWithHuffman(const string& encoded,
 }
 
         // If leaf node
-        if (!current->left && !current->right) {
-            decoded += current->symbol;
-            current = root;
-        }
+       if (!current->left && !current->right) {
+    decoded += current->symbol + "|";
+    current = root;
+}
     }
 
     return decoded;
