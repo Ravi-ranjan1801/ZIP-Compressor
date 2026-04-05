@@ -18,6 +18,41 @@ string readFile(const string& filename) {
     return buffer.str();
 }
 
+vector<string> splitSymbols(const string& decoded) {
+    vector<string> result;
+    string temp = "";
+
+    for (char c : decoded) {
+        if (c == '|') {
+            if (!temp.empty())
+                result.push_back(temp);
+            temp = "";
+        } else {
+            temp += c;
+        }
+    }
+    return result;
+}
+
+vector<Token> reconstructTokens(const vector<string>& symbols) {
+    vector<Token> tokens;
+
+    for (auto &s : symbols) {
+        if (s.rfind("L_", 0) == 0) {
+            char ch = s[2];
+            tokens.push_back({0, 0, ch});
+        } else if (s.rfind("M_", 0) == 0) {
+            int length, offset;
+            char nextChar;
+            sscanf(s.c_str(), "M_%d_%d_%c", &length, &offset, &nextChar);
+            if (nextChar == '#') nextChar = '\0';
+            tokens.push_back({offset, length, nextChar});
+        }
+    }
+
+    return tokens;
+}
+
 int main() {
 
     string filename;
@@ -42,13 +77,13 @@ int main() {
 
     cout << "Compression Ratio (naive): " << ratio << endl;
 
-    vector<string> symbols;
+  vector<string> symbols;
 
 for (auto &t : compressed) {
     if (t.offset == 0) {
-        symbols.push_back(string(1, t.nextChar));
+        symbols.push_back("L_" + string(1, t.nextChar));
     } else {
-        string matchSymbol = "M_" + to_string(t.length) + "_" + to_string(t.offset);
+        string matchSymbol = "M_" + to_string(t.length) + "_" + to_string(t.offset) + "_" + string(1, t.nextChar == '\0' ? '#' : t.nextChar);
         symbols.push_back(matchSymbol);
     }
 }
@@ -87,7 +122,16 @@ else
 cout << "Encoded Bit Length: " << encoded.size() << " bits\n";
 cout << "Approx Compressed Size: " << encoded.size() / 8.0 << " bytes\n";
 
-  
+ vector<string> decodedSymbols = splitSymbols(decodedStream);
+vector<Token> reconstructedTokens = reconstructTokens(decodedSymbols);
+string finalOutput = decompressLZ77(reconstructedTokens);
+
+if (finalOutput == input)
+    cout << "FULL PIPELINE SUCCESS\n";
+else
+    cout << "FULL PIPELINE FAILED\n";
+    
+
       freeTree(root);
     return 0;
 }
