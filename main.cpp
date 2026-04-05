@@ -53,6 +53,18 @@ vector<unsigned char> bitStringToBytes(const string& bits) {
     return bytes;
 }
 
+string bytesToBitString(const vector<unsigned char>& data) {
+    string bits = "";
+
+    for (unsigned char byte : data) {
+        for (int i = 7; i >= 0; i--) {
+            bits += ((byte >> i) & 1) ? '1' : '0';
+        }
+    }
+
+    return bits;
+}
+
 void writeBinaryFile(const string& filename, 
                      const vector<unsigned char>& data,
                      int bitLength) {
@@ -64,6 +76,25 @@ void writeBinaryFile(const string& filename,
 
     // then write actual data
     file.write((char*)data.data(), data.size());
+}
+
+vector<unsigned char> readBinaryFile(const string& filename, int &bitLength) {
+    ifstream file(filename, ios::binary);
+
+    if (!file) {
+        cerr << "Error opening compressed file\n";
+        exit(1);
+    }
+
+    // read bit length first
+    file.read((char*)&bitLength, sizeof(bitLength));
+
+    vector<unsigned char> data(
+        (istreambuf_iterator<char>(file)),
+        istreambuf_iterator<char>()
+    );
+
+    return data;
 }
 
 vector<Token> reconstructTokens(const vector<string>& symbols) {
@@ -133,10 +164,17 @@ string encoded = encodeWithHuffman(symbols, codes);
 
 auto bytes = bitStringToBytes(encoded);
 writeBinaryFile("compressed.bin", bytes, encoded.size());
+int bitLength;
+auto readBytes = readBinaryFile("compressed.bin", bitLength);
+
+string recoveredBits = bytesToBitString(readBytes);
+
+// remove padding
+recoveredBits = recoveredBits.substr(0, bitLength);
 
 cout << "Compressed file written: compressed.bin\n";
 
-string decodedStream = decodeWithHuffman(encoded, root);
+string decodedStream = decodeWithHuffman(recoveredBits, root);
 
 
 
